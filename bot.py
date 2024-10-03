@@ -36,7 +36,7 @@ def handle_forwarded_text(message: types.Message):
 
 @bot.message_handler(commands=['start'])
 def handle_command_start(message: types.Message):
-    bot.send_sticker(message.chat.id, sticker= "CAACAgIAAxkBAAEM561m_BTCrYQKog5CBkhXDTcYaoSJ0gACBQADwDZPE_lqX5qCa011NgQ",)
+    bot.send_sticker(message.chat.id, sticker= "CAACAgIAAxkBAAEM6adm_lpKMwuXg8v5Z9Aao9wPXP2SsQACMTQAAugboErSr6fEZiaivDYE",)
     #bot.send_sticker(message.chat.id, sticker=message.sticker.file_unique_id: str,)#
     bot.send_message(message.chat.id, text= "Привет! Я бот. Я еще многого не умею, но знаю много цитат, советов, и шуток. Рад познакомится)",)
     
