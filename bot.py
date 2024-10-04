@@ -1,6 +1,8 @@
 from telebot import TeleBot, types
 from telebot import custom_filters
 from telebot import formatting
+from telebot import util
+import currencies
 import random
 import advices
 import toki
@@ -100,6 +102,24 @@ def handle_photo(message: types.Message):
     bot.send_message(message.chat.id, text = formatting.mspoiler('Супер картинка!'),parse_mode = "MarkdownV2", reply_to_message_id= message.id,)
 
 #images.remove(img)
+@bot.message_handler(commands = ["usd_to_rub"])
+def convert_usd_to_rub(message: types.Message):
+    arguments = util.extract_arguments(message. text)
+    if not arguments:
+        bot.send_message(message.chat.id, advices.how_to_convert_usd_rub, parse_mode = "HTML")
+        return
+    if not arguments.isdigit():
+        text = formatting.format_text(formatting.format_text(advices. invalid_argument,formatting.hcode(arguments)), advices.how_to_convert_usd_rub,)
+        bot.send_message(message.chat.id, text, parse_mode = "HTML",)
+        return
+    
+    usd_amount = int(arguments)
+    rub_amount = usd_amount * currencies.USD_RUB
+
+    bot.send_message(message.chat.id, advices.format_convert_usd_to_rub(usd_amount=usd_amount,rub_amount=rub_amount,), parse_mode = "HTML",)
+
+
+
 
 @bot.message_handler(func= hi_in_text)
 def handle_hi_message(message: types.Message):
