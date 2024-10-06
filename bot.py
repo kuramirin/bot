@@ -2,6 +2,8 @@ from telebot import TeleBot, types
 from telebot import custom_filters
 from telebot import formatting
 from telebot import util
+import datetime 
+from datetime import timedelta
 import currencies
 import random
 import advices
@@ -84,6 +86,37 @@ def send_html_message(message: types.Message):
 def send_frogs_message(message: types.Message):
     bot.send_photo(message.chat.id, toki.FROGS_PIC,)
 
+
+def has_no_command_arguments(message: types.Message):
+    return not util.extract_arguments(message.text)
+
+
+@bot.message_handler(commands=["cvt"], func = has_no_command_arguments)
+def handle_cvt_currency_no_arguments(message: types.Message):
+        bot.send_message(message.chat.id, advices.cvt_how_to, parse_mode = "HTML")
+        
+    
+@bot.message_handler(commands=["cvt"],)
+def handle_cvt_currency(message: types.Message):
+    arguments = util.extract_arguments(message.text)
+    amount, _, currency = arguments.partition(" ")
+
+    if  not amount.isdigit():
+        error_text = formatting.format_text(advices.invalid_argument, formatting.hcode(arguments),advices.cvt_how_to,)
+        bot.end_message(message.chat.id, error_text,parse_mode = 'HTML')
+        return
+    currency = currency.strip()
+    ratio = currencies.get_currency_ratio(from_currency=currency, to_currency = "rub",)
+
+    if ratio == currencies.ERROR_FETCHING_VALUE:
+        bot.send_message(message.chat.id, advices.error_fetching_currencies_text,)
+        return
+
+    if ratio == currencies.ERROR_CURRENCY_NOT_FOUND:
+        bot.send_message(message.chat.id, advices.error_no_such_currency.format(currency = formatting.hcode(currency)), parse_mode = "HTML",) 
+        return   
+
+
 bot.message_handler()
 def copy_incoming_message(message: types.Message):
     #if message.entities:
@@ -114,7 +147,8 @@ def convert_usd_to_rub(message: types.Message):
         return
     
     usd_amount = int(arguments)
-    rub_amount = usd_amount * currencies.USD_RUB
+    ratio = currencies.get_usd_to_rub_ratio()
+    rub_amount = usd_amount * ratio
 
     bot.send_message(message.chat.id, advices.format_convert_usd_to_rub(usd_amount=usd_amount,rub_amount=rub_amount,), parse_mode = "HTML",)
 
