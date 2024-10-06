@@ -57,7 +57,9 @@ CYTATES = ["""<blockquote>Логика может привести Вас от �
 
 JOKES_URL = r"https://v2.jokeapi.dev/joke/Pun?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&format=txt&type=single"
 cvt_help_message = "Укажите аргумент для конвертации, пример: "
+
 how_to_convert_usd_rub = formatting.format_text(cvt_help_message, formatting.hcode("usd_to_rub 100"),)
+
 cvt_how_to = formatting.format_text(cvt_help_message, formatting.hcode("cvt 100 USD"),)
 
 invalid_argument = "Неверный аргумент: "
@@ -66,8 +68,15 @@ error_fetching_currencies_text = "Что-то пошло не так при за
 
 error_no_such_currency = "Неизвестная валюта {currency}, укажите существующую"
 
+def format_currency_convert_message(from_currency, to_currency, from_amount, to_amount):
+   return formatting.format_text(formatting.hcode(f"{from_amount:,}"), f"{from_currency.upper()} это примерно", formatting.hcode(f"{to_amount:,.2f}"), to_currency.upper(), separator = " ", )
+
+
 def format_convert_usd_to_rub(usd_amount, rub_amount):
-   return formatting.format_text(formatting.hcode(f"{usd_amount:,}"), "USD это примерно", formatting.hcode(f"{rub_amount:,.2f}"), "RUB", separator = " ", )
+   return format_currency_convert_message(from_currency="USD",to_currency= "RUB",from_amount= usd_amount, to_amount= rub_amount,)
+  
+
+
 
 def get_random_joke_text():
    response = requests.get(JOKES_URL)

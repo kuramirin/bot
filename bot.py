@@ -2,6 +2,7 @@ from telebot import TeleBot, types
 from telebot import custom_filters
 from telebot import formatting
 from telebot import util
+from decimal import Decimal
 import datetime 
 from datetime import timedelta
 import currencies
@@ -115,6 +116,10 @@ def handle_cvt_currency(message: types.Message):
     if ratio == currencies.ERROR_CURRENCY_NOT_FOUND:
         bot.send_message(message.chat.id, advices.error_no_such_currency.format(currency = formatting.hcode(currency)), parse_mode = "HTML",) 
         return   
+    from_amount = int(amount)
+    rub_amount = from_amount * ratio
+    bot.send_message(message.chat.id, advices.format_currency_convert_message(from_currency = currency,to_currency = "rub",from_amount = from_amount, to_amount = rub_amount,), parse_mode = "HTML")
+
 
 
 bot.message_handler()
@@ -145,6 +150,7 @@ def convert_usd_to_rub(message: types.Message):
         text = formatting.format_text(formatting.format_text(advices. invalid_argument,formatting.hcode(arguments)), advices.how_to_convert_usd_rub,)
         bot.send_message(message.chat.id, text, parse_mode = "HTML",)
         return
+    
     
     usd_amount = int(arguments)
     ratio = currencies.get_usd_to_rub_ratio()
