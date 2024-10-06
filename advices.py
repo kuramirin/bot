@@ -29,6 +29,7 @@ MESSAGES = ["""Вот доступные мне команды:
 /wiseness - случайная цитата  
 /random_advice - совет от бота  
 /usd_to_rub - конвертация к константному значению рубля к доллару
+/cvt 100 USD - конвертировать 100 USD в RUB
 /kva - картинка с квакушками
 /chat_id - chat id  
 /secret - is only for admin
@@ -55,11 +56,15 @@ CYTATES = ["""<blockquote>Логика может привести Вас от �
                             ]
 
 JOKES_URL = r"https://v2.jokeapi.dev/joke/Pun?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&format=txt&type=single"
-
-how_to_convert_usd_rub = formatting.format_text("Укажите аргумент для конвертации, пример: ", formatting.hcode("usd_to_rub 100"),)
+cvt_help_message = "Укажите аргумент для конвертации, пример: "
+how_to_convert_usd_rub = formatting.format_text(cvt_help_message, formatting.hcode("usd_to_rub 100"),)
+cvt_how_to = formatting.format_text(cvt_help_message, formatting.hcode("cvt 100 USD"),)
 
 invalid_argument = "Неверный аргумент: "
 
+error_fetching_currencies_text = "Что-то пошло не так при запросе, поробуйте снова несного позже."
+
+error_no_such_currency = "Неизвестная валюта {currency}, укажите существующую"
 
 def format_convert_usd_to_rub(usd_amount, rub_amount):
    return formatting.format_text(formatting.hcode(f"{usd_amount:,}"), "USD это примерно", formatting.hcode(f"{rub_amount:,.2f}"), "RUB", separator = " ", )
