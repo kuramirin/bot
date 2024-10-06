@@ -2,7 +2,6 @@ from telebot import TeleBot, types
 from telebot import custom_filters
 from telebot import formatting
 from telebot import util
-from decimal import Decimal
 import datetime 
 from datetime import timedelta
 import currencies
@@ -71,9 +70,9 @@ def handle_not_admin_secret(message: types.Message):
 def send_help_message(message: types.Message):
     bot.send_message(message.chat.id, help_message,)
 
-@bot.message_handler(commands = ["joke"])
-def send_joke_message(message: types.Message):
-    bot.send_message(message.chat.id, formatting.hcite(advices.get_random_joke_text), parse_mode = "HTML",)
+#@bot.message_handler(commands = ["joke"])
+#def send_joke_message(message: types.Message):
+    #bot.send_message(message.chat.id, formatting.hcite(advices.get_random_joke_text), parse_mode = "HTML",)
 
 @bot.message_handler(commands = ["md"])
 def send_markdown_message(message: types.Message):

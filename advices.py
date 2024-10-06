@@ -28,8 +28,8 @@ MESSAGES = ["""Вот доступные мне команды:
 /help - помощь (это сообщение)  
 /wiseness - случайная цитата  
 /random_advice - совет от бота  
-/usd_to_rub - конвертация к константному значению рубля к доллару
-/cvt 100 USD - конвертировать 100 USD в RUB
+/usd_to_rub - конвертация значения рубля к доллару
+/cvt - конвертировать любую валюту в RUB
 /kva - картинка с квакушками
 /chat_id - chat id  
 /secret - is only for admin
@@ -56,11 +56,11 @@ CYTATES = ["""<blockquote>Логика может привести Вас от �
                             ]
 
 JOKES_URL = r"https://v2.jokeapi.dev/joke/Pun?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&format=txt&type=single"
-cvt_help_message = "Укажите аргумент для конвертации, пример: "
+cvt_help_message = "Укажите аргумент для конвертации, например: "
 
-how_to_convert_usd_rub = formatting.format_text(cvt_help_message, formatting.hcode("usd_to_rub 100"),)
+how_to_convert_usd_rub = formatting.format_text(cvt_help_message, formatting.hcode("/usd_to_rub 100"),)
 
-cvt_how_to = formatting.format_text(cvt_help_message, formatting.hcode("cvt 100 USD"),)
+cvt_how_to = formatting.format_text(cvt_help_message, formatting.hcode("/cvt 100 EUR"),)
 
 invalid_argument = "Неверный аргумент: "
 
