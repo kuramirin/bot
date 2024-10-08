@@ -60,13 +60,15 @@ cvt_help_message = "Укажите аргумент для конвертаци�
 
 how_to_convert_usd_rub = formatting.format_text(cvt_help_message, formatting.hcode("/usd_to_rub 100"),)
 
-cvt_how_to = formatting.format_text(cvt_help_message, formatting.hcode("/cvt 100 EUR"),)
+cvt_how_to = formatting.format_text(cvt_help_message, formatting.hcode("/convert 100 EUR"),)
 
 invalid_argument = "Неверный аргумент: "
 
 error_fetching_currencies_text = "Что-то пошло не так при запросе, поробуйте снова несного позже."
 
 error_no_such_currency = "Неизвестная валюта {currency}, укажите существующую"
+
+set_my_currency_help_message = formatting.format_text("")
 
 def format_currency_convert_message(from_currency, to_currency, from_amount, to_amount):
    return formatting.format_text(formatting.hcode(f"{from_amount:,}"), f"{from_currency.upper()} это примерно", formatting.hcode(f"{to_amount:,.2f}"), to_currency.upper(), separator = " ", )
