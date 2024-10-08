@@ -2,6 +2,7 @@ from telebot import TeleBot, types
 from telebot import custom_filters
 from telebot import formatting
 from telebot import util
+from commands import default_commands
 import datetime 
 from datetime import timedelta
 import currencies
@@ -91,12 +92,12 @@ def has_no_command_arguments(message: types.Message):
     return not util.extract_arguments(message.text)
 
 
-@bot.message_handler(commands=["cvt"], func = has_no_command_arguments)
+@bot.message_handler(commands=["convert"], func = has_no_command_arguments)
 def handle_cvt_currency_no_arguments(message: types.Message):
         bot.send_message(message.chat.id, advices.cvt_how_to, parse_mode = "HTML")
         
     
-@bot.message_handler(commands=["cvt"],)
+@bot.message_handler(commands=["convert"],)
 def handle_cvt_currency(message: types.Message):
     arguments = util.extract_arguments(message.text)
     amount, _, currency = arguments.partition(" ")
@@ -117,9 +118,16 @@ def handle_cvt_currency(message: types.Message):
         return   
     from_amount = int(amount)
     rub_amount = from_amount * ratio
+    
     bot.send_message(message.chat.id, advices.format_currency_convert_message(from_currency = currency,to_currency = "rub",from_amount = from_amount, to_amount = rub_amount,), parse_mode = "HTML")
+    bot.send_sticker(message.chat.id, sticker = 'CAACAgIAAxkBAAEM60NnAAEnV4YEU-b9MYTD4e6ZEK4RTKsAAn89AAItySlKdrcmTxVTXBc2BA',)
 
+@bot.message_handler(commands= ["ser_my_currency"], func= has_no_command_arguments)
 
+def handle_no_arg_to_set_my_currency(message: types.Message):
+    bot.send_message(message.chat.id, text=advices.,parse_mode = "HTML",)
+
+def handle_set_my_currency(message: types.Message):   
 
 bot.message_handler()
 def copy_incoming_message(message: types.Message):
@@ -178,5 +186,5 @@ def echo_message(message: types.Message):
         text = ' Вполне себе стабильно, ты наверное и не представляешь, насколько одиноко мне может быть здесь взаперти'  
     bot.send_message(message.chat.id, text,entities= message.entities,)
 
-
+bot.set_my_commands(default_commands)
 bot.polling(non_stop = True)
