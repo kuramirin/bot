@@ -68,7 +68,14 @@ error_fetching_currencies_text = "Что-то пошло не так при за
 
 error_no_such_currency = "Неизвестная валюта {currency}, укажите существующую"
 
-set_my_currency_help_message = formatting.format_text("")
+set_my_currency_success_message = formatting.format_text("Валюта по умолчанию установлена:","{currency}", )
+
+set_my_currency_help_message = formatting.format_text("Укажите выбранную валюту, например:", formatting.hcode("/set_my_currency RUB")),
+
+
+
+#good_morning = ["""Доброго утра!!!""","""С добрым утром!!""",]
+
 
 def format_currency_convert_message(from_currency, to_currency, from_amount, to_amount):
    return formatting.format_text(formatting.hcode(f"{from_amount:,}"), f"{from_currency.upper()} это примерно", formatting.hcode(f"{to_amount:,.2f}"), to_currency.upper(), separator = " ", )
