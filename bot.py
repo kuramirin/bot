@@ -3,6 +3,10 @@ from telebot import custom_filters
 from telebot import formatting
 from telebot import util
 from commands import default_commands
+from currencies import default_currency_key
+import sched
+import threading
+import time
 import datetime 
 from datetime import timedelta
 import currencies
@@ -107,35 +111,57 @@ def handle_cvt_currency(message: types.Message):
         bot.end_message(message.chat.id, error_text,parse_mode = 'HTML')
         return
     currency = currency.strip()
-    ratio = currencies.get_currency_ratio(from_currency=currency, to_currency = "rub",)
+    default_currency = "RUB"
+
+    user_data = bot.current_states.get_data(message.chat.id, user_id = message.from_user.id)
+
+    if user_data and default_currency_key in user_data:
+        default_currency = user_data[default_currency_key]
+
+    currency_from, currency_to = currencies.get_currencies_name(currency=currency, default_to = default_currency)
+
+    ratio = currencies.get_currency_ratio(from_currency=currency_from, to_currency = currency_to,)
 
     if ratio == currencies.ERROR_FETCHING_VALUE:
         bot.send_message(message.chat.id, advices.error_fetching_currencies_text,)
         return
-
-    if ratio == currencies.ERROR_CURRENCY_NOT_FOUND:
-        bot.send_message(message.chat.id, advices.error_no_such_currency.format(currency = formatting.hcode(currency)), parse_mode = "HTML",) 
-        return   
-    from_amount = int(amount)
-    rub_amount = from_amount * ratio
     
-    bot.send_message(message.chat.id, advices.format_currency_convert_message(from_currency = currency,to_currency = "rub",from_amount = from_amount, to_amount = rub_amount,), parse_mode = "HTML")
+    if ratio in {currencies.ERROR_CURRENCY_NOT_FOUND, currencies.ERROR_CURRENCY_INVALID}:
+        bad_currency = currency_from
+        bot.send_message(message.chat.id, advices.error_no_such_currency.format(currency = formatting.hcode(bad_currency)), parse_mode = "HTML",) 
+        return   
+    
+    from_amount = int(amount)
+    result_amount = from_amount * ratio
+    bot.send_message(message.chat.id, advices.format_currency_convert_message(from_currency = currency_from,to_currency = currency_to,from_amount = from_amount, to_amount = result_amount,), parse_mode = "HTML")
     bot.send_sticker(message.chat.id, sticker = 'CAACAgIAAxkBAAEM60NnAAEnV4YEU-b9MYTD4e6ZEK4RTKsAAn89AAItySlKdrcmTxVTXBc2BA',)
 
-@bot.message_handler(commands= ["ser_my_currency"], func= has_no_command_arguments)
-
+@bot.message_handler(commands= ["set_my_currency"], func= has_no_command_arguments)
 def handle_no_arg_to_set_my_currency(message: types.Message):
-    bot.send_message(message.chat.id, text=advices.,parse_mode = "HTML",)
+    bot.send_message(message.chat.id, text=advices.set_my_currency_help_message, parse_mode = "HTML",)
 
+
+
+
+@bot.message_handler(commands= ["set_my_currency"],)
 def handle_set_my_currency(message: types.Message):   
+   currency = util.extract_arguments(message. text)
+   if not currencies.is_currency_available(currency or ""):
+       bot.send_message(message.chat.id, advices.error_no_such_currency.format(currency = formatting.hcode(currency)), parse_mode = "HTML",)
+       return
+   if bot.get_state(
+       user_id = message.from_user.id, chat_id = message.chat.id,
+   )is None: bot.set_state(user_id = message.from_user.id, chat_id = message.chat.id, state = 0)
 
-bot.message_handler()
-def copy_incoming_message(message: types.Message):
+   bot.add_data(user_id=message.from_user.id, chat_id =  message.chat.id, **{currencies.default_currency_key: currency},)
+   bot.send_message(message.chat.id, advices.set_my_currency_success_message.format(currency = formatting.hcode(currency)), parse_mode= "HTML",)
+
+#def copy_incoming_message(message: types.Message):
     #if message.entities:
        ###print("message entities:")
         ###for entity in message.entities:
            # print(entity)
-    bot.copy_message(message.chat.id, from_chat_id = message.chat.id, message_id = message.id,)
+    #bot.copy_message(message.chat.id, from_chat_id = message.chat.id, message_id = message.id,)
 
 @bot.message_handler(content_types=['photo'])
 def handle_photo(message: types.Message):
@@ -165,6 +191,8 @@ def convert_usd_to_rub(message: types.Message):
 
     bot.send_message(message.chat.id, advices.format_convert_usd_to_rub(usd_amount=usd_amount,rub_amount=rub_amount,), parse_mode = "HTML",)
 
+def shedule_func_2(message: types.Message):
+    bot.send_message(message.chat.id, random.choice(advices.good_morning),)
 
 
 
