@@ -4,10 +4,6 @@ from telebot import formatting
 from telebot import util
 from commands import default_commands
 from currencies import default_currency_key
-import sched
-import threading
-import time
-import datetime 
 from datetime import timedelta
 import currencies
 import random
@@ -214,5 +210,16 @@ def echo_message(message: types.Message):
         text = ' Вполне себе стабильно, ты наверное и не представляешь, насколько одиноко мне может быть здесь взаперти'  
     bot.send_message(message.chat.id, text,entities= message.entities,)
 
+
+def any_query(query: types.InlineQuery):
+    print(query)
+    return True
+
+@bot.inline_handler(func = any_query)
+def handle_any_inline_query(query: types.InlineQuery):
+    pass
+
+
 bot.set_my_commands(default_commands)
-bot.polling(non_stop = True)
+bot.enable_saving_states
+bot.infinity_polling()
