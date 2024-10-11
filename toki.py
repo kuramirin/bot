@@ -22,7 +22,7 @@ __underline__
 ||spoiler||
 *bold _italic bold ~italic bold strikethrough ||italic bold strikethrough spoiler||~ __underline italic bold___ bold*
 [inline URL](http://www.example.com/)
-[Amir](tg://user?id=775292229)
+[Amir](tg://user?id=111111111111)
 ![👍](tg://emoji?id=5368324170671202286)
 `inline fixed-width code`
 ```
