@@ -4,13 +4,13 @@
 #config.read("config.ini")
 
 
-BOT_TOKEN ='111111111111111111111111111111111111111111111111'#config.get(section="bot", option= "token")
+BOT_TOKEN ='11111111111111111111111111111111111111111111'#config.get(section="bot", option= "token")
  #os.getenv('BOT_TOKEN')
 #if not BOT_TOKEN
    # exit("Please, provide BOT_TOKEN env variable")
 FROGS_PIC = 'https://i.pinimg.com/originals/98/25/c9/9825c95e8df7826e413a816ce49ce25e.jpg'
 dont_forward_commands = 'Какой остроумный ответ!'
-BOT_ADMIN_USER_IDS = ['775292229',
+BOT_ADMIN_USER_IDS = ['1111111111111111',
                       '124',
                       '2636']
 secret_message_for_admin = 'password is password'
@@ -22,7 +22,7 @@ __underline__
 ||spoiler||
 *bold _italic bold ~italic bold strikethrough ||italic bold strikethrough spoiler||~ __underline italic bold___ bold*
 [inline URL](http://www.example.com/)
-[Amir](tg://user?id=111111111111)
+[Amir](tg://user?id=775292229)
 ![👍](tg://emoji?id=5368324170671202286)
 `inline fixed-width code`
 ```
