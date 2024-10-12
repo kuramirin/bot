@@ -1,5 +1,5 @@
 import requests
-from telebot import formatting
+from telebot import formatting, types
 
 ADVICES = ["Пойми, что тебе по-настоящему нравится. Это и самое главное, и самое сложное. Золотое правило гласит – делай то, что доставляет тебе истинное удовольствие, и тогда ты станешь намного счастливее. Но надо быть готовым к тому, что поиск своего пути – это марафон, который может продолжаться много (десятков?) лет. ",
            "Откажись от мусора, который ты ешь, пьешь и куришь каждый день. Никаких секретов и хитрых диет – просто натуральная пища, фрукты, овощи, вода. Не надо становиться вегетарианцем и полностью завязывать с выпивкой, - достаточно лишь максимально ограничить сахар, муку, кофе, алкоголь и всю пластмассовую еду. ",
@@ -71,6 +71,46 @@ error_no_such_currency = "Неизвестная валюта {currency}, ука
 set_my_currency_success_message = formatting.format_text("Валюта по умолчанию установлена:","{currency}", )
 
 set_my_currency_help_message = formatting.format_text("Укажите выбранную валюту, например:", formatting.hcode("/set_my_currency RUB")),
+
+def format_message_content_currency_conversion(
+   from_curr: str,
+   to_curr: str,
+   amount_str,
+   result_amount_str,
+):
+   content = types.InputTextMessageContent(
+      message_text = formatting.format_text(
+         f"{formatting.hcode(amount_str)} {from_curr} в {to_curr}:",
+         formatting.hcode(result_amount_str),
+         ), 
+      parse_mode= "HTML",
+   )
+   return content
+
+ def format_content_to_result_article(
+     from_currency: str,
+     to_currency: str,
+     amount,
+     total_amount,
+):
+     from_curr = from_currency.upper()
+     to_curr = to_currency.upper()
+     amount_str = f"{amount:,}"
+     result_amount_str = f"{total_amount:,.2f}"
+     content = format_message_content_currency_conversion(
+          from_curr = from_curr,
+          to_curr = to_curr,
+          amount_str = amount_str,
+          result_amount_str= result_amount_str,
+        )
+     result = types.InlineQueryResultArticle(
+          id = f"{from_currency}-{to_curr}-{amount}",
+          title = f"{result_amount_str} {to_curr}",
+          description = f"{amount_str} {from_curr} = {result_amount_str} {to_curr}",
+          input_message_content= content,
+      )
+      return result  
+
 
 
 
