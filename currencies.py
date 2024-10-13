@@ -1,4 +1,6 @@
 import requests
+from datetime import date
+from functools import lru_cache
 from decimal import Decimal
 
 
@@ -7,6 +9,7 @@ USD_RUB = 95.25
 
 default_currency_key = "default currency"   
 
+local_currency_key ="local_currency"
 CURRENCIES_API_LIST_URL = ("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies.json")
 
 
@@ -32,7 +35,30 @@ def fetch_available_currencies():
 def is_currency_available(currency: str) -> bool:
     return currency.lower() in fetch_available_currencies()
 
+def fetch_all_available_currencies():
+    response = requests.get(CURRENCIES_API_LIST_URL)
+    if response.status_code == 200:
+        return response.json()
+    return{}
 
+@lru_cache(maxsize = 1)
+def fetch_available_currencies_for_date(the_date):
+    """
+    Fetches available. Param the_date is more caching (key)
+    
+    :param the_date:
+    :return:
+    """
+    print("fetching available currencies for", the_date)
+    return fetch_all_available_currencies()
+
+def get_latest_available_currencies():
+    today = date.today().isoformat()
+    return fetch_available_currencies_for_date(today)
+
+
+def is_currency_available(currency: str) -> bool:
+    return currency.lower() in get_latest_available_currencies()
 
 def get_currency_ratio(from_currency, to_currency):
     from_currency = from_currency.lower()
