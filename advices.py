@@ -72,6 +72,13 @@ set_my_currency_success_message = formatting.format_text("Валюта по ум
 
 set_my_currency_help_message = formatting.format_text("Укажите выбранную валюту, например:", formatting.hcode("/set_my_currency RUB")),
 
+set_local_currency_help_message = formatting.format_text("Необходимо указать локальную валюту, например:", formatting.hcode("/set_local_currency RUB",))
+
+set_local_currency_success_message = "Локальная вылюта {currency} указана успешно"
+
+set_local_currency_only_in_private_chat = ("Установка локальной валюты доступна только в личном чате")
+
+
 def format_message_content_currency_conversion(
    from_curr: str,
    to_curr: str,
@@ -87,7 +94,7 @@ def format_message_content_currency_conversion(
    )
    return content
 
- def format_content_to_result_article(
+def format_content_to_result_article(
      from_currency: str,
      to_currency: str,
      amount,
@@ -97,23 +104,30 @@ def format_message_content_currency_conversion(
      to_curr = to_currency.upper()
      amount_str = f"{amount:,}"
      result_amount_str = f"{total_amount:,.2f}"
-     content = format_message_content_currency_conversion(
-          from_curr = from_curr,
-          to_curr = to_curr,
-          amount_str = amount_str,
-          result_amount_str= result_amount_str,
-        )
+     content=format_message_content_currency_conversion(from_curr=from_curr,to_curr=to_curr,amount_str=amount_str,result_amount_str=result_amount_str,)
      result = types.InlineQueryResultArticle(
-          id = f"{from_currency}-{to_curr}-{amount}",
-          title = f"{result_amount_str} {to_curr}",
-          description = f"{amount_str} {from_curr} = {result_amount_str} {to_curr}",
-          input_message_content= content,
-      )
-      return result  
+         id=f"{from_currency}-{to_curr}-{amount}",
+         title=f"{result_amount_str}{to_curr}",
+         description=f"{amount_str}{from_curr}={result_amount_str}{to_curr}",
+         input_message_content=content,)
+     return result
 
 
-
-
+def prepare_default_result_article(query_id):
+   content = types.InputTextMessageContent(
+      message_text = formatting.format_text(
+         formatting.hbold("Сообщение из inline запроса"),
+         f"id запроса inline: {formatting.hcode(query_id)}",
+      ),
+      parse_mode = "HTML",
+   )
+   result = types.InlineQueryResultArticle(
+      id = "default-answer",
+      title = "Inline cooбщение",
+      description = "Информация о текущем запросе и ответе",
+      input_message_content = content,
+   )
+   return result
 #good_morning = ["""Доброго утра!!!""","""С добрым утром!!""",]
 
 
