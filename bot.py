@@ -196,11 +196,18 @@ def handle_no_arg_to_set_my_currency(message: types.Message):
         text=advices.set_my_currency_help_message, 
         parse_mode = "HTML",)
 
+@bot.message_handler(commands= ["set_my_currency"])
+def handle_set_my_currency(message: types.Message):
+    set_selected_currency(
+        message,
+        data_key =currencies.default_currency_key,
+        set_my_currency_success_message= advices.set_my_currency_success_message,
+    )
 
-
-
-@bot.message_handler(commands= ["set_my_currency"],)
-def handle_set_my_currency(message: types.Message):   
+def set_selected_currency(
+    message: types.Message,
+    data_key: str,
+    set_my_currency_success_message: str,):
    currency = util.extract_arguments(message. text)
    if not currencies.is_currency_available(currency or ""):
        bot.send_message(
@@ -209,10 +216,12 @@ def handle_set_my_currency(message: types.Message):
                currency = formatting.hcode(currency)), 
            parse_mode = "HTML",)
        return
-   if bot.get_state(
+   if (
+       bot.get_state(
        user_id = message.from_user.id,
-                 chat_id = message.chat.id,
-   )is None: bot.set_state(
+       chat_id = message.chat.id,
+   )is None
+   ): bot.set_state(
        user_id = message.from_user.id, 
        chat_id = message.chat.id, 
        state = 0)
@@ -225,6 +234,22 @@ def handle_set_my_currency(message: types.Message):
        advices.set_my_currency_success_message.format(
            currency = formatting.hcode(currency)), 
        parse_mode= "HTML",)
+
+
+def current_chat_is_not_user_chat(message: types.Message):
+    return message.chat.id != message.from_user.id
+
+@bot.message_handler(commands= ["set_local_currency"], func = current_chat_is_not_user_chat,)
+def set_local_currency_handle_not_private_chat(message: types.Message):
+    bot.send_message(message.chat.id, advices.set_local_currency_only_in_private_chat,)
+
+@bot.message_handler(commands= ["set_local_currency"], func = has_no_command_arguments,)
+def no_args_to_set_local_currency(message: types.Message):
+    bot.send_message(message.chat.id, advices.set_local_currency_help_message, parse_mode = "HTML",) 
+
+@bot.message_handler(commands = ["set_local_currency"])
+def set_local_currency(message: types.Message):
+    set_selected_currency(message, data_key= currencies.local_currency_key, set_currency_success_message = advices.set_local_currency_success_message,)
 
 #def copy_incoming_message(message: types.Message):
     #if message.entities:
@@ -357,14 +382,12 @@ def any_query(query: types.InlineQuery):
 
 @bot.inline_handler(func = any_query)
 def handle_any_inline_query(query: types.InlineQuery):
-    content = types.InputTextMessageContent(
-        message_text= formatting.format_text(formatting.hbold("Inline сообщение!"),
-    f"id запроса Inline:{formatting.hcode(query.id)}"),
-    parse_mode= "HTML"), 
-
-    result = types.InlineQueryResultArticle(id="default-answer",title = "Inline message",description = "Тут будет информация о текущем запросе и ответе", input_message_content = content,)
+    result = advices.prepare_default_result_article(str(query.id))
     results = [result,]
-    bot.answer_inline_query(inline_query_id = query.id, results=results, cache_time = 10,)
+    bot.answer_inline_query(
+        inline_query_id = query.id,
+        results=results,
+        cache_time = 10,)
 
 
 
