@@ -1,3 +1,4 @@
+from is_query_only_digits import is_query_only_digits
 from telebot import TeleBot, types
 from telebot import custom_filters
 from telebot import formatting
@@ -9,7 +10,7 @@ import currencies
 import random
 import advices
 import toki
-import myfilt
+import custom_filters.myfilt as myfilt
 import os
 from os import listdir
 bot = TeleBot(toki.BOT_TOKEN)
@@ -339,17 +340,25 @@ def echo_message(message: types.Message):
         message.chat.id, 
         text,entities= message.entities,)
 
-def is_query_only_digits(query:types.InlineQuery):
-    if query and query.query:
-        return query.query.isdigit()
-    return False
 @bot.inline_handler(func= is_query_only_digits)
 def handle_convert_inline_query(query: types.InlineQuery):
     amount = int(query.query)
 
     target_currencies = currencies.FAVORITE_CURRENCIES
     from_currency = currencies.DEFAULT_LOCAL_CURRENCY
+    user_data = bot.current_states.get_data(
+        query.from_user.id, 
+        query.from_user.id,)
 
+    if user_data and currencies.local_currency_key in user_data:
+        from_currency = user_data[currencies.local_currency_key]
+
+def handle_any_convert_to_many_inline_query(
+        query: types.InlineQuery,
+        amount: int,
+        from_currency: str,
+        target_currencies = list[str],
+    ):
     ratios = currencies.get_currencies_ratio(
         from_currency= from_currency,
         to_currencies= target_currencies,
@@ -376,6 +385,52 @@ def handle_convert_inline_query(query: types.InlineQuery):
         cache_time = 10,
     )
 
+def is_query_amount_and_available_currency(query: types.InlineQuery):
+    text = query.query or ""
+    amount, _, currency = text.partition(" ")
+    if not amount.isdigit():
+        return False
+    
+    return currencies.is_currency_available(currency)
+
+
+def is_query_amount_and_available_currencies_from_and_to(query: types.InlineQuery):
+    text = query.query or ""
+    amount, _, currencies_from_and_to = text.partition(" ")
+    if not amount.isdigit():
+        return False
+    
+    from_currency, _, to_currency = currencies_from_and_to.partition(" ")
+    if not currencies.is_currency_available(from_currency):
+        return False
+    if not currencies.is_currency_available(to_currency):
+        return False
+    return True
+
+@bot.inline_handler(func=is_query_amount_and_available_currencies_from_and_to)
+def handle_convert_query_with_selected_currency_and_target_currency(query: types.InlineQuery):
+    amount_str, _, from_currency, to_currency = query.query.split(" ",maxsplit=2)
+    amount = int(amount_str)
+    target_currencies = [to_currency]
+
+    handle_any_convert_to_many_inline_query(
+        query=query,
+        amount=amount,
+        from_currency=from_currency,
+        target_currencies = target_currencies,)    
+
+@bot.inline_handler(func=is_query_amount_and_available_currency)
+def handle_convert_query_with_selected_currency(query: types.InlineQuery):
+    amount_str, _, currency =query.query.partition(" ")
+    amount = int(amount_str)
+    target_currencies = currencies.FAVORITE_CURRENCIES
+
+    handle_any_convert_to_many_inline_query(
+        query=query,
+        amount=amount,
+        from_currency=currency,
+        target_currencies = target_currencies,)
+
 def any_query(query: types.InlineQuery):
     print(query)
     return True
@@ -393,4 +448,4 @@ def handle_any_inline_query(query: types.InlineQuery):
 
 bot.set_my_commands(default_commands)
 bot.enable_saving_states
-bot.infinity_polling()
+bot.infinity_polling(skip_pending=True, allowed_updates=[])
