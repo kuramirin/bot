@@ -78,6 +78,11 @@ set_local_currency_success_message = "Локальная вылюта {currency}
 
 set_local_currency_only_in_private_chat = ("Установка локальной валюты доступна только в личном чате")
 
+survey_message_what_is_your_full_name = formatting.format_text("Как тебя зовут?)"
+                                                               "Напиши свое полное имя.")
+survey_message_full_name_is_not_text = formatting.format_text("Хмм, мне кажется это не твое настоящее имя._.")
+
+survey_message_full_name_ok = formatting.format_text("У тебя красивое имя, {full_name}, я запомнил его!")
 
 def format_message_content_currency_conversion(
    from_curr: str,
