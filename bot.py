@@ -444,7 +444,25 @@ def handle_any_inline_query(query: types.InlineQuery):
         results=results,
         cache_time = 10,)
 
+def handle_user_full_name(message: types.Message):
+    if message.content_type != "text":
+        bot.send_message(
+            message.chat.id, 
+            text = advices.survey_message_full_name_is_not_text,)
+        return
 
+    full_name = message.text
+    bot.send_message(
+        message.chat.id, 
+        text = advices.survey_message_full_name_ok.format(full_name= full_name),)    
+
+
+@bot.message_handler(commands= ["survey"])
+
+def handle_survey__command_start_survey(message: types.Message):
+    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name,)
+    bot.register_next_step_handler(message,callback = handle_user_full_name,)
+    pass
 
 bot.set_my_commands(default_commands)
 bot.enable_saving_states
