@@ -130,8 +130,40 @@ def handle_cvt_currency_no_arguments(message: types.Message):
             message.chat.id, 
             advices.cvt_how_to, 
             parse_mode = "HTML")
-        
-    
+
+def  is_valid_email(text: str) -> bool:
+     return("@" in text and "." in text)
+
+def handle_user_full_name(message: types.Message):
+    if message.content_type != "text":
+        bot.send_message(
+            message.chat.id, 
+            text = advices.survey_message_full_name_is_not_text,)
+        bot.register_next_step_handler(message = message, callback= handle_user_full_name,)
+        return
+
+    full_name = message.text
+    bot.send_message(
+        message.chat.id, 
+        text = advices.survey_message_full_name_ok.format(full_name= full_name),)    
+
+
+def handle_user_full_email(message: types.Message):
+    if message.content_type != "text":
+        bot.send_message(
+            message.chat.id, 
+            text = advices.survey_message_email_not_okay,)
+        bot.register_next_step_handler(message = message, callback= handle_user_full_email,)
+        return
+
+@bot.message_handler(commands=["survey"])
+
+def handle_survey__command_start_survey(message: types.Message):
+    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name,)
+    bot.register_next_step_handler(message,callback = handle_user_full_name,)
+    pass
+
+
 @bot.message_handler(commands=["convert"],)
 def handle_cvt_currency(message: types.Message):
     arguments = util.extract_arguments(message.text)
@@ -444,25 +476,7 @@ def handle_any_inline_query(query: types.InlineQuery):
         results=results,
         cache_time = 10,)
 
-def handle_user_full_name(message: types.Message):
-    if message.content_type != "text":
-        bot.send_message(
-            message.chat.id, 
-            text = advices.survey_message_full_name_is_not_text,)
-        return
 
-    full_name = message.text
-    bot.send_message(
-        message.chat.id, 
-        text = advices.survey_message_full_name_ok.format(full_name= full_name),)    
-
-
-@bot.message_handler(commands= ["survey"])
-
-def handle_survey__command_start_survey(message: types.Message):
-    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name,)
-    bot.register_next_step_handler(message,callback = handle_user_full_name,)
-    pass
 
 bot.set_my_commands(default_commands)
 bot.enable_saving_states
