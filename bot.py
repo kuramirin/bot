@@ -16,6 +16,7 @@ from os import listdir
 bot = TeleBot(toki.BOT_TOKEN)
 bot.add_custom_filter(custom_filters.TextMatchFilter())
 bot.add_custom_filter(custom_filters.TextContainsFilter())
+bot.add_custom_filter(custom_filters.StateFilter(bot))
 bot.add_custom_filter(custom_filters.IsReplyFilter())
 bot.add_custom_filter(myfilt.IsUserBotAdmin())
 
@@ -24,6 +25,10 @@ COOL_ADVICES = advices.ADVICES
 COOL_CYTATES = advices.CYTATES
 #images = os.listdir(r"C:\Users\amirk\OneDrive\Рабочий стол\cartinka")
 
+class SurveyStates():
+    full_name="full_name"
+    user_email = "user_email"
+    how_much_pushups = "how_much_pushups"
 
 def kva_in_caption(message: types.Message):
     return message.caption and 'ква' in message.caption.lower()
@@ -131,9 +136,11 @@ def handle_cvt_currency_no_arguments(message: types.Message):
             advices.cvt_how_to, 
             parse_mode = "HTML")
 
+
 def  is_valid_email(text: str) -> bool:
      return("@" in text and "." in text)
 
+@bot.message_handler(state= SurveyStates.full_name,)
 def handle_user_full_name(message: types.Message):
     if message.content_type != "text":
         bot.send_message(
@@ -145,23 +152,26 @@ def handle_user_full_name(message: types.Message):
     full_name = message.text
     bot.send_message(
         message.chat.id, 
-        text = advices.survey_message_full_name_ok.format(full_name= full_name),)    
-
+        text = advices.survey_message_full_name_ok_and_ask_for_email.format(full_name= full_name),)    
+    
 
 def handle_user_full_email(message: types.Message):
-    if message.content_type != "text":
+    if not (
+        message.content_type == "text" and is_valid_email(message.text)):
         bot.send_message(
             message.chat.id, 
             text = advices.survey_message_email_not_okay,)
-        bot.register_next_step_handler(message = message, callback= handle_user_full_email,)
+        
+    
         return
+    bot.send_message(message.chat.id, advices.survey_message_email_ok,)
 
 @bot.message_handler(commands=["survey"])
 
 def handle_survey__command_start_survey(message: types.Message):
+    bot.set_state(user_id= message.from_user.id, chat_id= message.chat.id, state= SurveyStates.full_name,)
     bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name,)
-    bot.register_next_step_handler(message,callback = handle_user_full_name,)
-    pass
+    
 
 
 @bot.message_handler(commands=["convert"],)
@@ -480,4 +490,6 @@ def handle_any_inline_query(query: types.InlineQuery):
 
 bot.set_my_commands(default_commands)
 bot.enable_saving_states
+bot.enable_save_next_step_handlers(delay= 2)
+bot.load_next_step_handlers()
 bot.infinity_polling(skip_pending=True, allowed_updates=[])
