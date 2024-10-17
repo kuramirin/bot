@@ -6,6 +6,7 @@ from telebot import util
 from commands import default_commands
 from currencies import default_currency_key
 from datetime import timedelta
+from telebot.handler_backends import StatesGroup, State
 import currencies
 import random
 import advices
@@ -25,10 +26,10 @@ COOL_ADVICES = advices.ADVICES
 COOL_CYTATES = advices.CYTATES
 #images = os.listdir(r"C:\Users\amirk\OneDrive\Рабочий стол\cartinka")
 
-class SurveyStates():
-    full_name="full_name"
-    user_email = "user_email"
-    how_much_pushups = "how_much_pushups"
+class SurveyStates(StatesGroup):
+    full_name=State()
+    user_email = State()
+    how_much_pushups = State()
 
 def kva_in_caption(message: types.Message):
     return message.caption and 'ква' in message.caption.lower()
@@ -140,21 +141,33 @@ def handle_cvt_currency_no_arguments(message: types.Message):
 def  is_valid_email(text: str) -> bool:
      return("@" in text and "." in text)
 
-@bot.message_handler(state= SurveyStates.full_name,)
-def handle_user_full_name(message: types.Message):
-    if message.content_type != "text":
-        bot.send_message(
-            message.chat.id, 
-            text = advices.survey_message_full_name_is_not_text,)
-        bot.register_next_step_handler(message = message, callback= handle_user_full_name,)
-        return
+def is_valid_email_message_text(message: types.Message) -> bool:
+    return message.text and is_valid_email(message.text)
 
+@bot.message_handler(state= SurveyStates.full_name,content_types= ["text"],)
+def handle_user_full_name(message: types.Message):
     full_name = message.text
+    bot.add_data(user_id= message.from_user.id,chat_id= message.chat.id, full_name=full_name,)
+    bot.set_state(user_id= message.from_user.id,chat_id= message.chat.id, state= SurveyStates.user_email,)
     bot.send_message(
         message.chat.id, 
         text = advices.survey_message_full_name_ok_and_ask_for_email.format(full_name= full_name),)    
     
+@bot.message_handler(state = SurveyStates.full_name, content_types= util.content_type_media,)
 
+def handle_user_full_name_not_text(message: types.Message):
+   
+        bot.send_message(
+            message.chat.id, 
+            text = advices.survey_message_full_name_is_not_text,)
+
+@bot.message_handler(state = SurveyStates.user_email, content_types= ["text"],func=is_valid_email_message_text)
+
+def handle_user_email_ok(message: types.Message):
+        bot.send_message(
+            message.chat.id, 
+            text = advices.survey_message_email_ok,)   
+    
 def handle_user_full_email(message: types.Message):
     if not (
         message.content_type == "text" and is_valid_email(message.text)):
