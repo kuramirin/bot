@@ -88,7 +88,12 @@ survey_message_full_name_ok_and_ask_for_email = formatting.format_text("У те�
 
 survey_message_email_not_okay = formatting.format_text("Не похоже на настоящий email._."
                                                        "Укажи валидный")
-survey_message_email_ok = formatting.format_text("Спасибо за предоставленную информацию о вас, я не буду никак ее использовать в своих личных целях")
+survey_message_email_ok = formatting.format_text("Спасибо за предоставленную информацию о вас, я не буду никак ее использовать в своих личных целях"
+                                                 "Сколько отжиманий ты сегодня сделал(а)?")
+survey_message_invalid_number= formatting.format_text("Не похоже на число._.")
+
+
+
 def format_message_content_currency_conversion(
    from_curr: str,
    to_curr: str,

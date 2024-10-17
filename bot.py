@@ -18,6 +18,7 @@ bot = TeleBot(toki.BOT_TOKEN)
 bot.add_custom_filter(custom_filters.TextMatchFilter())
 bot.add_custom_filter(custom_filters.TextContainsFilter())
 bot.add_custom_filter(custom_filters.StateFilter(bot))
+bot.add_custom_filter(custom_filters.IsDigitFilter())
 bot.add_custom_filter(custom_filters.IsReplyFilter())
 bot.add_custom_filter(myfilt.IsUserBotAdmin())
 
@@ -144,6 +145,11 @@ def  is_valid_email(text: str) -> bool:
 def is_valid_email_message_text(message: types.Message) -> bool:
     return message.text and is_valid_email(message.text)
 
+@bot.message_handler(commands=["survey"])
+def handle_survey__command_start_survey(message: types.Message):
+    bot.set_state(user_id= message.from_user.id, chat_id= message.chat.id, state= SurveyStates.full_name,)
+    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name,)
+
 @bot.message_handler(state= SurveyStates.full_name,content_types= ["text"],)
 def handle_user_full_name(message: types.Message):
     full_name = message.text
@@ -162,28 +168,53 @@ def handle_user_full_name_not_text(message: types.Message):
             text = advices.survey_message_full_name_is_not_text,)
 
 @bot.message_handler(state = SurveyStates.user_email, content_types= ["text"],func=is_valid_email_message_text)
-
 def handle_user_email_ok(message: types.Message):
+        bot.add_data(user_id= message.from_user.id,chat_id= message.chat.id,user_email = message.text,)
+        bot.set_state(user_id= message.from_user.id,chat_id= message.chat.id,state = SurveyStates.how_much_pushups,)
         bot.send_message(
             message.chat.id, 
             text = advices.survey_message_email_ok,)   
+
+@bot.message_handler(state = SurveyStates.user_email, content_types=util.content_type_media,)   
+def handle_user_full_email_not_ok(message: types.Message):
     
-def handle_user_full_email(message: types.Message):
-    if not (
-        message.content_type == "text" and is_valid_email(message.text)):
         bot.send_message(
             message.chat.id, 
             text = advices.survey_message_email_not_okay,)
         
+        #bot.send_message(message.chat.id, advices.survey_message_email_not_ok,)
+    #bot.register_next_step_handler(message=message, callback= handle_user_full_email,)
+
+@bot.message_handler(state= SurveyStates.how_much_pushups, content_type= ["text"],is_digit = True,)
+def handle_number_of_pushups_ok(message: types.Message):
+    with bot.retrieve_data(
+        message.from_user.id,message.chat.id
+    ) as data:
+       full_name = data.pop("full_name", "-")
+       user_email = data.pop("user_email", "-@")
+    number = message.text
+    text = formatting.format_text(
+        "Спасибо,что прошли опрос!", 
+        formatting.format_text("Вашe имя:",
+        formatting.hbold(full_name),
+        separator = " "),
+        formatting.format_text("Ваш email:",
+        formatting.hcode(user_email),
+        separator = " "),
+        formatting.format_text("Количество отжиманий:",
+        formatting.hunderline(number),
+        separator = " "),),
+    bot.set_state(message.from_user.id, message.chat.id, state = 0,)
+    bot.send_message(message.chat.id, text = text,)   
     
-        return
-    bot.send_message(message.chat.id, advices.survey_message_email_ok,)
 
-@bot.message_handler(commands=["survey"])
 
-def handle_survey__command_start_survey(message: types.Message):
-    bot.set_state(user_id= message.from_user.id, chat_id= message.chat.id, state= SurveyStates.full_name,)
-    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name,)
+
+@bot.message_handler(state= SurveyStates.how_much_pushups, content_types = util.content_type_media,)
+def handle_number_of_pushups_not_ok(message: types.Message):
+    bot.send_message(message.chat.id, text= advices.survey_message_invalid_number,)
+
+
     
 
 
