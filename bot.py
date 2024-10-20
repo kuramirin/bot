@@ -28,7 +28,7 @@ COOL_CYTATES = advices.CYTATES
 #images = os.listdir(r"C:\Users\amirk\OneDrive\Рабочий стол\cartinka")
 
 class SurveyStates(StatesGroup):
-    full_name=State()
+    full_name = State()
     user_email = State()
     how_much_pushups = State()
 
@@ -185,32 +185,33 @@ def handle_user_full_email_not_ok(message: types.Message):
         #bot.send_message(message.chat.id, advices.survey_message_email_not_ok,)
     #bot.register_next_step_handler(message=message, callback= handle_user_full_email,)
 
-@bot.message_handler(state= SurveyStates.how_much_pushups, content_type= ["text"],is_digit = True,)
+@bot.message_handler(state= SurveyStates.how_much_pushups,content_types=["text"],is_digit=True,)
 def handle_number_of_pushups_ok(message: types.Message):
     with bot.retrieve_data(
-        message.from_user.id,message.chat.id
+        message.from_user.id,message.chat.id,
     ) as data:
-       full_name = data.pop("full_name", "-")
-       user_email = data.pop("user_email", "-@")
+       full_name = data.pop("full_name","-@")
+       user_email = data.pop("user_email","-")
+
     number = message.text
     text = formatting.format_text(
         "Спасибо,что прошли опрос!", 
         formatting.format_text("Вашe имя:",
         formatting.hbold(full_name),
-        separator = " "),
+        separator = " ",),
         formatting.format_text("Ваш email:",
         formatting.hcode(user_email),
-        separator = " "),
-        formatting.format_text("Количество отжиманий:",
+        separator = " ",),
+        formatting.format_text("Тебе:",
         formatting.hunderline(number),
-        separator = " "),),
+        separator = " ",),)
     bot.set_state(message.from_user.id, message.chat.id, state = 0,)
-    bot.send_message(message.chat.id, text = text,)   
+    bot.send_message(message.chat.id, text = text, parse_mode = "HTML",)   
     
 
 
 
-@bot.message_handler(state= SurveyStates.how_much_pushups, content_types = ["text"],is_digit = False,)
+@bot.message_handler(state= SurveyStates.how_much_pushups, content_types = util.content_type_media,)
 def handle_number_of_pushups_not_ok(message: types.Message):
     bot.send_message(message.chat.id, text= advices.survey_message_invalid_number,)
 
