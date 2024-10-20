@@ -210,7 +210,7 @@ def handle_number_of_pushups_ok(message: types.Message):
 
 
 
-@bot.message_handler(state= SurveyStates.how_much_pushups, content_types = util.content_type_media,)
+@bot.message_handler(state= SurveyStates.how_much_pushups, content_types = ["text"],is_digit = False,)
 def handle_number_of_pushups_not_ok(message: types.Message):
     bot.send_message(message.chat.id, text= advices.survey_message_invalid_number,)
 
