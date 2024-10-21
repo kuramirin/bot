@@ -7,7 +7,8 @@ default_commands = [
      BotCommand("random_advice", "совет от бота",),
      BotCommand("convert","конвертировать любую валюту в рубли"),
      BotCommand("set_my_currency", "установить целевую валюту", ),
-     BotCommand("secret", "only for admin",)
+     BotCommand("secret", "only for admin",),
+     BotCommand("set_local_currency", "установить локальную валюту",)
     ]
 
 

@@ -95,6 +95,9 @@ def handle_not_admin_secret(message: types.Message):
     bot.send_message(
         message.chat.id, 
         toki.secret_message_not_for_admin,)
+    bot.send_sticker(
+        message.chat.id, 
+        sticker = "CAACAgIAAxkBAAEM_7lnFmL2Jj4sCZtEgWOf_Z2Zu9TbRgACAzYAAgjOMErEAAH7H5AfVxw2BA",)
 
 @bot.message_handler(commands=['help'])
 def send_help_message(message: types.Message):
@@ -217,7 +220,10 @@ def handle_number_of_pushups_not_ok(message: types.Message):
 
 
     
-
+@bot.message_handler(commands = ["play"],)
+def handle_play_com(message: types.Message):
+    bot.send_message(message.chat.id, text = "🏀")
+    
 
 @bot.message_handler(commands=["convert"],)
 def handle_cvt_currency(message: types.Message):
@@ -393,6 +399,7 @@ def convert_usd_to_rub(message: types.Message):
         rub_amount=rub_amount,
         ), 
         parse_mode = "HTML",)
+    bot.send_message(message.chat.id, text = '💸')
 
 def shedule_func_2(message: types.Message):
     bot.send_message(
