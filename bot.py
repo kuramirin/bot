@@ -73,7 +73,7 @@ def handle_command_start(message: types.Message):
     #bot.send_sticker(message.chat.id, sticker=message.sticker.file_unique_id: str,)#
     bot.send_message(
         message.chat.id, 
-        text= "Привет! Я бот. Я еще многого не умею, но знаю много цитат, советов, и шуток. Рад познакомится)",)
+        text= "Привет! Я бот. Я еще многого не умею, но знаю много цитат, советов, и конвертированно-валютных кондиций. Рад познакомится)",)
     
 @bot.message_handler(commands =["chat_id"])
 def handle_chat_id_request(message: types.Message):
@@ -164,10 +164,10 @@ def is_valid_email_message_text(message: types.Message) -> bool:
 @bot.message_handler(commands=["survey"])
 def handle_survey__command_start_survey(message: types.Message):
     bot.set_state(user_id= message.from_user.id, chat_id= message.chat.id, state= SurveyStates.full_name,)
-    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name, parse_mode = "HTML", reply_marup = cancel_kb,)
+    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name, parse_mode = "HTML", reply_markup = cancel_kb,)
 
 @bot.message_handler(commands = ["cancel"], state = all_survey_states,)
-@bot.message_handler(text = custom_filters.TextFilter(equals= "отмена"), ignore_case = True,)
+@bot.message_handler(text = custom_filters.TextFilter(equals= "отмена",ignore_case = True,),state = all_survey_states,)
 def handle_cancel_survey(message:types.Message):
     with bot.retrieve_data(
         message.from_user.id,message.chat.id,
@@ -175,7 +175,7 @@ def handle_cancel_survey(message:types.Message):
       data.pop("full_name","-@")
       data.pop("user_email","-")
     bot.set_state(message.from_user.id, message.chat.id,)
-    bot.send_message(message.chat.id, text = advices.survey_message_cancel,)
+    bot.send_message(message.chat.id, text = advices.survey_message_cancel,reply_markup = types.ReplyKeyboardRemove(),)
     
 
 
@@ -243,6 +243,7 @@ def handle_how_are_you_ok(message: types.Message):
 
 @bot.message_handler(state= SurveyStates.how_are_you, content_types = util.content_type_media,)
 def handle_how_are_you_yes_or_no_not_ok(message: types.Message):
+    bot.send_sticker(message.chat.id, sticker = "CAACAgIAAxkBAAENAAG5ZxfT_6YFWIytV-BxamHAfyhEsUEAAtQwAAKZMKFKBDV9NrPJ_ZU2BA",)
     bot.send_message(message.chat.id, 
                      text= advices.survey_message_invalid_yes_or_no,
                      reply_markup= yes_or_no_kb,
