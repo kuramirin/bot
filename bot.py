@@ -30,7 +30,20 @@ COOL_CYTATES = advices.CYTATES
 class SurveyStates(StatesGroup):
     full_name = State()
     user_email = State()
-    how_much_pushups = State()
+    how_are_you = State()
+
+def get_yes_or_no_kb():
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True,one_time_keyboard = True,)
+    keyboard.add("Да","Нет")
+    
+    return keyboard
+
+all_survey_states = SurveyStates().state_list
+
+yes_or_no_kb = get_yes_or_no_kb()
+
+cancel_kb = types.ReplyKeyboardMarkup(resize_keyboard = True, one_time_keyboard = True,)
+cancel_kb.add("Отмена")
 
 def kva_in_caption(message: types.Message):
     return message.caption and 'ква' in message.caption.lower()
@@ -151,7 +164,20 @@ def is_valid_email_message_text(message: types.Message) -> bool:
 @bot.message_handler(commands=["survey"])
 def handle_survey__command_start_survey(message: types.Message):
     bot.set_state(user_id= message.from_user.id, chat_id= message.chat.id, state= SurveyStates.full_name,)
-    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name,)
+    bot.send_message(message.chat.id, text = advices.survey_message_what_is_your_full_name, parse_mode = "HTML", reply_marup = cancel_kb,)
+
+@bot.message_handler(commands = ["cancel"], state = all_survey_states,)
+@bot.message_handler(text = custom_filters.TextFilter(equals= "отмена"), ignore_case = True,)
+def handle_cancel_survey(message:types.Message):
+    with bot.retrieve_data(
+        message.from_user.id,message.chat.id,
+    ) as data:
+      data.pop("full_name","-@")
+      data.pop("user_email","-")
+    bot.set_state(message.from_user.id, message.chat.id,)
+    bot.send_message(message.chat.id, text = advices.survey_message_cancel,)
+    
+
 
 @bot.message_handler(state= SurveyStates.full_name,content_types= ["text"],)
 def handle_user_full_name(message: types.Message):
@@ -173,10 +199,11 @@ def handle_user_full_name_not_text(message: types.Message):
 @bot.message_handler(state = SurveyStates.user_email, content_types= ["text"],func=is_valid_email_message_text)
 def handle_user_email_ok(message: types.Message):
         bot.add_data(user_id= message.from_user.id,chat_id= message.chat.id,user_email = message.text,)
-        bot.set_state(user_id= message.from_user.id,chat_id= message.chat.id,state = SurveyStates.how_much_pushups,)
+        bot.set_state(user_id= message.from_user.id,chat_id= message.chat.id,state = SurveyStates.how_are_you,)
         bot.send_message(
             message.chat.id, 
-            text = advices.survey_message_email_ok,)   
+            text = advices.survey_message_email_ok,
+            reply_markup= yes_or_no_kb,)   
 
 @bot.message_handler(state = SurveyStates.user_email, content_types=util.content_type_media,)   
 def handle_user_full_email_not_ok(message: types.Message):
@@ -188,35 +215,38 @@ def handle_user_full_email_not_ok(message: types.Message):
         #bot.send_message(message.chat.id, advices.survey_message_email_not_ok,)
     #bot.register_next_step_handler(message=message, callback= handle_user_full_email,)
 
-@bot.message_handler(state= SurveyStates.how_much_pushups,content_types=["text"],is_digit=True,)
-def handle_number_of_pushups_ok(message: types.Message):
+@bot.message_handler(state= SurveyStates.how_are_you,content_types=["text"],text = custom_filters.TextFilter(equals = "да", ignore_case= True,))
+@bot.message_handler(state= SurveyStates.how_are_you,content_types=["text"],text = custom_filters.TextFilter(equals = "нет", ignore_case= True,))
+def handle_how_are_you_ok(message: types.Message):
     with bot.retrieve_data(
         message.from_user.id,message.chat.id,
     ) as data:
        full_name = data.pop("full_name","-@")
        user_email = data.pop("user_email","-")
 
-    number = message.text
     text = formatting.format_text(
-        "Спасибо,что прошли опрос!", 
-        formatting.format_text("Вашe имя:",
+        "Замечательно!", 
+        formatting.format_text("Тебя зовут:",
         formatting.hbold(full_name),
         separator = " ",),
-        formatting.format_text("Ваш email:",
+        formatting.format_text("Твой email:",
         formatting.hcode(user_email),
         separator = " ",),
-        formatting.format_text("Тебе:",
-        formatting.hunderline(number),
+        formatting.format_text("Дела хорошо:",
+        formatting.hitalic(message.text.title()),
         separator = " ",),)
-    bot.set_state(message.from_user.id, message.chat.id, state = 0,)
-    bot.send_message(message.chat.id, text = text, parse_mode = "HTML",)   
+    bot.set_state(message.from_user.id, message.chat.id,)
+    bot.send_message(message.chat.id, text = text, parse_mode = "HTML", reply_markup= types.ReplyKeyboardRemove(),)   
     
 
 
 
-@bot.message_handler(state= SurveyStates.how_much_pushups, content_types = util.content_type_media,)
-def handle_number_of_pushups_not_ok(message: types.Message):
-    bot.send_message(message.chat.id, text= advices.survey_message_invalid_number,)
+@bot.message_handler(state= SurveyStates.how_are_you, content_types = util.content_type_media,)
+def handle_how_are_you_yes_or_no_not_ok(message: types.Message):
+    bot.send_message(message.chat.id, 
+                     text= advices.survey_message_invalid_yes_or_no,
+                     reply_markup= yes_or_no_kb,
+                     )
 
 
     
