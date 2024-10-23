@@ -14,6 +14,8 @@ import toki
 import custom_filters.myfilt as myfilt
 import os
 from os import listdir
+import datetime
+from time import strftime
 bot = TeleBot(toki.BOT_TOKEN)
 bot.add_custom_filter(custom_filters.TextMatchFilter())
 bot.add_custom_filter(custom_filters.TextContainsFilter())
@@ -34,7 +36,7 @@ class SurveyStates(StatesGroup):
 
 def get_yes_or_no_kb():
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard = True,one_time_keyboard = True,)
-    keyboard.add("Да","Нет")
+    keyboard.add("Да:)","Нет:(")
     
     return keyboard
 
@@ -50,6 +52,26 @@ def kva_in_caption(message: types.Message):
 
 def hi_in_text(message: types.Message):
     return message.text and "привет"  in message.text.lower()
+
+def create_media_message_keyboard():
+    kb = types.InlineKeyboardMarkup()
+    vk_button = types.InlineKeyboardButton(text = "VK🐳", url= "https://vk.com/",)
+    inst_button = types.InlineKeyboardButton(text = "Inst🦄", url= "https://www.instagram.com/",)  
+    kb.add(vk_button)
+    kb.add(inst_button)
+    return kb
+
+@bot.message_handler(commands= ["media"])
+def handle_comand_media(message: types.Message):
+    kb = create_media_message_keyboard()
+    bot.send_message(message.chat.id, text = advices.media_message_text, reply_markup = kb)
+    
+    
+@bot.message_handler(commands= ["hmdil"])
+def handle_hmdil(message: types.Message):
+    bot.send_message(message.chat.id, text = "В разработке",)
+    bot.send_sticker(message.chat.id, sticker = "CAACAgIAAxkBAAENAbdnGS_-TheynFv8bEmEhmmqYOqAVQAC3T4AAkAtSEkJNg0v7ieVhDYE",)
+
 
 @bot.message_handler(content_types=['sticker'])
 def handle_sticker(message: types.Message):
@@ -140,7 +162,7 @@ def send_html_message(message: types.Message):
 def send_frogs_message(message: types.Message):
     bot.send_photo(
         message.chat.id, 
-        toki.FROGS_PIC,)
+        photo= random.choice(toki.FROGS_PIC),)
 
 
 def has_no_command_arguments(message: types.Message):
@@ -215,8 +237,8 @@ def handle_user_full_email_not_ok(message: types.Message):
         #bot.send_message(message.chat.id, advices.survey_message_email_not_ok,)
     #bot.register_next_step_handler(message=message, callback= handle_user_full_email,)
 
-@bot.message_handler(state= SurveyStates.how_are_you,content_types=["text"],text = custom_filters.TextFilter(equals = "да", ignore_case= True,))
-@bot.message_handler(state= SurveyStates.how_are_you,content_types=["text"],text = custom_filters.TextFilter(equals = "нет", ignore_case= True,))
+@bot.message_handler(state= SurveyStates.how_are_you,content_types=["text"],text = custom_filters.TextFilter(equals = "да:)", ignore_case= True,))
+@bot.message_handler(state= SurveyStates.how_are_you,content_types=["text"],text = custom_filters.TextFilter(equals = "нет:(", ignore_case= True,))
 def handle_how_are_you_ok(message: types.Message):
     with bot.retrieve_data(
         message.from_user.id,message.chat.id,
@@ -225,7 +247,7 @@ def handle_how_are_you_ok(message: types.Message):
        user_email = data.pop("user_email","-")
 
     text = formatting.format_text(
-        "Замечательно!", 
+        "Замечательно! Вот, что я о тебе узнал", 
         formatting.format_text("Тебя зовут:",
         formatting.hbold(full_name),
         separator = " ",),
