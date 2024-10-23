@@ -4,44 +4,20 @@
 #config.read("config.ini")
 
 
-BOT_TOKEN ='11111111111111111111111111111111111111111111'#config.get(section="bot", option= "token")
+BOT_TOKEN ='7801880555:AAGqXw6ZggnVouATkHBvphElyEDc5xzS6vY'#config.get(section="bot", option= "token")
  #os.getenv('BOT_TOKEN')
 #if not BOT_TOKEN
    # exit("Please, provide BOT_TOKEN env variable")
-FROGS_PIC = 'https://i.pinimg.com/originals/98/25/c9/9825c95e8df7826e413a816ce49ce25e.jpg'
+FROGS_PIC = ['https://web.telegram.org/25abb121-1f73-49f3-96bb-9c633ada3daf',
+             "https://web.telegram.org/25abb121-1f73-49f3-96bb-9c633ada3daf",
+             "https://web.telegram.org/bea6c3ca-3f59-4a57-8a90-933ac780eba3",]
 dont_forward_commands = 'Какой остроумный ответ!'
-BOT_ADMIN_USER_IDS = ['1111111111111111',
+BOT_ADMIN_USER_IDS = ['775292229',
                       '124',
                       '2636']
 secret_message_for_admin = 'password is password'
 secret_message_not_for_admin = 'this is only for admin!'
-md = """*bold \*text*
-_italic \_text_
-__underline__
-~strikethrough~
-||spoiler||
-*bold _italic bold ~italic bold strikethrough ||italic bold strikethrough spoiler||~ __underline italic bold___ bold*
-[inline URL](http://www.example.com/)
-[Amir](tg://user?id=775292229)
-![👍](tg://emoji?id=5368324170671202286)
-`inline fixed-width code`
-```
-pre-formatted fixed-width code block
-```
-```python
-pre-formatted fixed-width code block written in the Python programming language
-```
->Block quotation started
->Block quotation continued
->Block quotation continued
->Block quotation continued
->The last line of the block quotation
-**>The expandable block quotation started right after the previous block quotation
->It is separated from the previous block quotation by an empty bold entity
->Expandable block quotation continued
->Hidden by default part of the expandable block quotation started
->Expandable block quotation continued
->The last line of the expandable block quotation with the expandability mark||"""
+
 
 html_text = """<b>bold</b>, <strong>bold</strong>
 <i>italic</i>, <em>italic</em>
