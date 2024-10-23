@@ -27,12 +27,13 @@ MESSAGES = ["""Вот доступные мне команды:
 /start - начало взаимодействия с ботом  
 /help - помощь (это сообщение)
 /survey - минизнакомство  
+/hmdil - сколько дней ты прожил(а)
 /wiseness - случайная цитата  
 /random_advice - совет от бота  
 /usd_to_rub - конвертация значения рубля к доллару
 /convert - конвертировать любую валюту в RUB
-/set_local_currency - установить локальную валюту
 /art - моя случайная картинка
+/media - my social media
 /chat_id - chat id  
 /secret - is only for admin
 
@@ -97,6 +98,10 @@ survey_message_invalid_number= formatting.format_text("Не похоже на ч
 survey_message_invalid_yes_or_no= formatting.format_text("Не понимаю._., пожалуйста, укажите да или нет.")
 
 survey_message_cancel = formatting.format_text("Отменилось. Заново: /survey")
+
+your_bithday = formatting.format_text("Введи дату своего рождения, например:", formatting.hcode("/my_birthday 21.09.2004",))
+
+media_message_text = formatting.format_text("🌐Вот мои соцсети:",)
 def format_message_content_currency_conversion(
    from_curr: str,
    to_curr: str,
