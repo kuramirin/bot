@@ -4,7 +4,7 @@
 #config.read("config.ini")
 
 
-BOT_TOKEN ='7801880555:AAGqXw6ZggnVouATkHBvphElyEDc5xzS6vY'#config.get(section="bot", option= "token")
+BOT_TOKEN ='11111111111111111111111111111'#config.get(section="bot", option= "token")
  #os.getenv('BOT_TOKEN')
 #if not BOT_TOKEN
    # exit("Please, provide BOT_TOKEN env variable")
@@ -12,7 +12,7 @@ FROGS_PIC = ['https://web.telegram.org/25abb121-1f73-49f3-96bb-9c633ada3daf',
              "https://web.telegram.org/25abb121-1f73-49f3-96bb-9c633ada3daf",
              "https://web.telegram.org/bea6c3ca-3f59-4a57-8a90-933ac780eba3",]
 dont_forward_commands = 'Какой остроумный ответ!'
-BOT_ADMIN_USER_IDS = ['775292229',
+BOT_ADMIN_USER_IDS = ['1111111111111',
                       '124',
                       '2636']
 secret_message_for_admin = 'password is password'
