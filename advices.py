@@ -101,7 +101,7 @@ survey_message_cancel = formatting.format_text("Отменилось. Занов
 
 your_bithday = formatting.format_text("Введи дату своего рождения, например:", formatting.hcode("/my_birthday 21.09.2004",))
 
-media_message_text = formatting.format_text("🌐Вот мои соцсети:",)
+media_message_text = formatting.format_text("Вот мои соцсети🌐",)
 def format_message_content_currency_conversion(
    from_curr: str,
    to_curr: str,
