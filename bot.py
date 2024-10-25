@@ -55,8 +55,8 @@ def hi_in_text(message: types.Message):
 
 def create_media_message_keyboard():
     kb = types.InlineKeyboardMarkup()
-    vk_button = types.InlineKeyboardButton(text = "VK🐳", url= "https://vk.com/",)
-    inst_button = types.InlineKeyboardButton(text = "Inst🦄", url= "https://www.instagram.com/",)  
+    vk_button = types.InlineKeyboardButton(text = "VK🐳", url= "https://vk.com/kuramirin",)
+    inst_button = types.InlineKeyboardButton(text = "Inst🦄", url= "https://www.instagram.com/kuramirrin",)  
     kb.add(vk_button)
     kb.add(inst_button)
     return kb
