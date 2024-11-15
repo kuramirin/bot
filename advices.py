@@ -67,7 +67,7 @@ cvt_how_to = formatting.format_text(cvt_help_message, formatting.hcode("/convert
 
 invalid_argument = "Неверный аргумент: "
 
-error_fetching_currencies_text = "Что-то пошло не так при запросе, поробуйте снова несного позже."
+error_fetching_currencies_text = "Что-то пошло не так при запросе, поробуйте снова немного позже."
 
 error_no_such_currency = "Неизвестная валюта {currency}, укажите существующую"
 
